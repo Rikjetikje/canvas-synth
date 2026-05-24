@@ -264,39 +264,38 @@ export function createChordPanel(container, opts = {}) {
   }
 
   function whiteKeyBaseGradient(ctx, x, y, w, h) {
-    // Traditional ivory-white piano look, with a subtle vertical gradient.
+    // Dark stealth-look base — white keys are dark grey at rest.
     const g = ctx.createLinearGradient(x, y, x, y + h)
-    g.addColorStop(0,    'rgba(232,232,232,1)')   // bright top
-    g.addColorStop(0.85, 'rgba(200,200,205,1)')
-    g.addColorStop(1,    'rgba(175,175,182,1)')   // shadow at bottom (depth)
+    g.addColorStop(0,    'rgba(45,45,52,1)')      // subtle highlight top
+    g.addColorStop(0.06, 'rgba(28,28,34,1)')
+    g.addColorStop(1,    'rgba(8,8,12,1)')        // dark bottom
     return g
   }
 
   function blackKeyBaseGradient(ctx, x, y, w, h) {
     const g = ctx.createLinearGradient(x, y, x, y + h)
-    g.addColorStop(0,    'rgba(45,45,52,1)')      // slight sheen top
-    g.addColorStop(0.15, 'rgba(15,15,18,1)')
-    g.addColorStop(1,    'rgba(2,2,4,1)')         // pitch black bottom
+    g.addColorStop(0,    'rgba(18,18,24,1)')
+    g.addColorStop(0.10, 'rgba(8,8,12,1)')
+    g.addColorStop(1,    'rgba(2,2,4,1)')
     return g
   }
 
   function activeKeyGradient(ctx, x, y, w, h, isBlack) {
-    // Active key: warm amber glow so it pops on both light (white) and
-    // dark (black) keys. Strong on top, fading down.
+    // Bright white glow on top of the dark base — pops because of contrast.
     const g = ctx.createLinearGradient(x, y, x, y + h)
-    g.addColorStop(0,    'rgba(255,225,140,0.95)')
-    g.addColorStop(0.45, 'rgba(255,205,110,0.85)')
-    g.addColorStop(1,    isBlack ? 'rgba(235,180,85,0.80)' : 'rgba(240,190,90,0.65)')
+    g.addColorStop(0,    'rgba(255,255,255,0.95)')
+    g.addColorStop(0.4,  'rgba(245,245,255,0.7)')
+    g.addColorStop(1,    isBlack ? 'rgba(220,225,240,0.55)' : 'rgba(235,235,245,0.5)')
     return g
   }
 
   function octaveShiftedGradient(ctx, x, y, w, h, isBlack) {
-    // Same amber hue as active but much fainter — pitch class is active
-    // at a different octave than the one shown here.
+    // Dim "off-white" — pitch class is active but at a different octave.
+    // Same hue as active, much lower alpha.
     const g = ctx.createLinearGradient(x, y, x, y + h)
-    g.addColorStop(0,    'rgba(255,225,140,0.35)')
-    g.addColorStop(0.5,  'rgba(255,210,120,0.22)')
-    g.addColorStop(1,    isBlack ? 'rgba(235,185,90,0.18)' : 'rgba(240,195,95,0.12)')
+    g.addColorStop(0,    'rgba(255,255,255,0.32)')
+    g.addColorStop(0.5,  'rgba(245,245,255,0.18)')
+    g.addColorStop(1,    isBlack ? 'rgba(220,225,240,0.10)' : 'rgba(230,230,240,0.08)')
     return g
   }
 
