@@ -4,7 +4,24 @@
 // gradient from green (consonant extension) to red (clashing) based on how
 // each pitch class would relate to the current chord.
 
-const NOTE_NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B']
+const SHARP_NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B']
+const FLAT_NAMES  = ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A', 'B♭', 'B']
+
+// Context-aware note spelling. Minor / diminished chords use flats (the
+// minor third is ♭3, not #2 — Cm has E♭, not D♯). Otherwise we default to
+// sharp names. For an unknown/missing chord, sharp is the standard default.
+export function spellPc(pc, chordName) {
+  const useFlats = chordName ? /^(m|dim)/.test(chordName) : false
+  return (useFlats ? FLAT_NAMES : SHARP_NAMES)[((pc % 12) + 12) % 12]
+}
+
+export function spellNoteMidi(midi, chordName) {
+  const pc = ((midi % 12) + 12) % 12
+  const octave = Math.floor(midi / 12) - 1
+  return spellPc(pc, chordName) + octave
+}
+
+const NOTE_NAMES = SHARP_NAMES   // legacy fallback for callers that don't pass a chord
 
 // Common chord patterns, intervals (in semitones) from the root.
 const CHORDS = [
@@ -54,7 +71,7 @@ function sortedEq(a, b) {
 export function recognizeChord(pitchClasses) {
   const pcs = [...new Set(pitchClasses)].sort((a, b) => a - b)
   if (pcs.length === 0) return null
-  if (pcs.length === 1) return { root: pcs[0], name: '', symbol: NOTE_NAMES[pcs[0]] }
+  if (pcs.length === 1) return { root: pcs[0], name: '', symbol: spellPc(pcs[0], '') }
 
   // Exact match (any rotation as root)
   for (const root of pcs) {
@@ -62,7 +79,7 @@ export function recognizeChord(pitchClasses) {
     for (const c of CHORDS) {
       const sortedC = [...c.intervals].sort((a, b) => a - b)
       if (sortedEq(intervals, sortedC)) {
-        return { root, name: c.name, symbol: NOTE_NAMES[root] + c.name }
+        return { root, name: c.name, symbol: spellPc(root, c.name) + c.name }
       }
     }
   }
@@ -83,12 +100,12 @@ export function recognizeChord(pitchClasses) {
     return {
       root: bestPartial.root,
       name: bestPartial.chord.name,
-      symbol: NOTE_NAMES[bestPartial.root] + bestPartial.chord.name + '…',
+      symbol: spellPc(bestPartial.root, bestPartial.chord.name) + bestPartial.chord.name + '…',
     }
   }
 
-  // Unknown — list the notes
-  return { root: pcs[0], name: '?', symbol: pcs.map(p => NOTE_NAMES[p]).join(' ') }
+  // Unknown — list the notes (sharp default since no chord context)
+  return { root: pcs[0], name: '?', symbol: pcs.map(p => SHARP_NAMES[p]).join(' ') }
 }
 
 // Check whether a set of pitch classes (any rotation) matches one of the

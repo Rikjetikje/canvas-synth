@@ -9,7 +9,7 @@ import { createWaveformGesture } from './ui/wavegesture.js'
 import { createTriangleMod } from './ui/triangle.js'
 import { createIntensityCircle } from './ui/intensity.js'
 import { createKnob } from './ui/knob.js'
-import { createChordPanel } from './ui/chord.js'
+import { createChordPanel, spellNoteMidi } from './ui/chord.js'
 
 // — Presets (localStorage) —
 const PRESET_PREFIX = 'canvas-synth-preset:'
@@ -165,23 +165,24 @@ function onPortamentoChange(v) {
 
 // — Note display —
 
-const activeNoteNames = new Set()
-
-function showNote(name) {
-  activeNoteNames.add(name)
-  noteDisplay.textContent = [...activeNoteNames].join('  ')
+// Note display renders from activeMidis (defined below) using the chord's
+// preferred spelling — so a Cm shows C / E♭ / G instead of C / D♯ / G.
+function renderNoteDisplay() {
+  const chordName = chordPanel?.getChord?.()?.name
+  if (activeMidis.size === 0) {
+    noteDisplay.textContent = '—'
+    noteDisplay.classList.remove('playing')
+    return
+  }
+  const sorted = [...activeMidis].sort((a, b) => a - b)
+  noteDisplay.textContent = sorted.map(m => spellNoteMidi(m, chordName)).join('  ')
   noteDisplay.classList.add('playing')
 }
 
-function clearNote(name) {
-  activeNoteNames.delete(name)
-  if (activeNoteNames.size === 0) {
-    noteDisplay.textContent = '—'
-    noteDisplay.classList.remove('playing')
-  } else {
-    noteDisplay.textContent = [...activeNoteNames].join('  ')
-  }
-}
+// Stubs kept for backwards-compat — the actual rendering happens via
+// renderNoteDisplay(), and activeMidis is the source of truth.
+function showNote(_)  { renderNoteDisplay() }
+function clearNote(_) { renderNoteDisplay() }
 
 // — Keyboard input —
 
@@ -312,7 +313,10 @@ let chordPanel     = null
 
 // Active midi notes (combined keyboard + MIDI input). Used by the chord panel.
 const activeMidis = new Set()
-function refreshChord() { chordPanel?.updateNotes(activeMidis) }
+function refreshChord() {
+  chordPanel?.updateNotes(activeMidis)
+  renderNoteDisplay()   // chord context can change preferred enharmonic spelling
+}
 
 function wireSlider(key, apply, lockKey = null) {
   const s = sliders[key]
