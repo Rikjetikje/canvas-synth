@@ -302,6 +302,7 @@ export function createChordPanel(container, opts = {}) {
   function drawPiano(ctx, w, pianoTop, pianoH) {
     const startM = startMidi()
     const totalWhites = octaves * 7
+    const hasActive = activeMidis.size > 0
     // Constant key aspect (width / pianoHeight). The panel ITSELF grows
     // taller at lower octave counts (via CSS based on data-octaves), so
     // the keys scale up in BOTH dimensions — a real zoom rather than just
@@ -346,7 +347,7 @@ export function createChordPanel(container, opts = {}) {
             innerW / 2, innerH / 2,
             scores[pc])
           ctx.fillRect(innerX, innerY, innerW, innerH)
-        } else if (!activeMidis.has(midi)) {
+        } else if (hasActive && !activeMidis.has(midi)) {
           ctx.fillStyle = octaveShiftedGradient(ctx, innerX, innerY, innerW, innerH, false)
           ctx.fillRect(innerX, innerY, innerW, innerH)
         }
@@ -390,7 +391,7 @@ export function createChordPanel(container, opts = {}) {
             innerW / 2, innerH / 2,
             scores[pc])
           ctx.fillRect(innerX, innerY, innerW, innerH)
-        } else if (!activeMidis.has(midi)) {
+        } else if (hasActive && !activeMidis.has(midi)) {
           ctx.fillStyle = octaveShiftedGradient(ctx, innerX, innerY, innerW, innerH, true)
           ctx.fillRect(innerX, innerY, innerW, innerH)
         }
