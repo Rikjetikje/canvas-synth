@@ -289,6 +289,16 @@ export function createChordPanel(container, opts = {}) {
     return g
   }
 
+  function octaveShiftedGradient(ctx, x, y, w, h, isBlack) {
+    // Dimmer "off-white" — pitch class is active but at a different octave,
+    // so this exact key isn't being sounded but its pc is.
+    const g = ctx.createLinearGradient(x, y, x, y + h)
+    g.addColorStop(0,    'rgba(255,255,255,0.32)')
+    g.addColorStop(0.5,  'rgba(245,245,255,0.18)')
+    g.addColorStop(1,    isBlack ? 'rgba(220,225,240,0.10)' : 'rgba(230,230,240,0.08)')
+    return g
+  }
+
   function drawPiano(ctx, w, pianoTop, pianoH) {
     const startM = startMidi()
     const totalWhites = octaves * 7
@@ -328,16 +338,20 @@ export function createChordPanel(container, opts = {}) {
         ctx.fillStyle = whiteKeyBaseGradient(ctx, innerX, innerY, innerW, innerH)
         ctx.fillRect(innerX, innerY, innerW, innerH)
 
-        // Suggestion glow — radial gradient centred on key
+        // Either a suggestion glow (pc is inactive) or an off-white
+        // octave-shifted glow (pc is active elsewhere but not at this midi).
         if (scores[pc] != null) {
           ctx.fillStyle = suggestionGlow(ctx,
             innerX + innerW / 2, innerY + innerH * 0.55,
             innerW / 2, innerH / 2,
             scores[pc])
           ctx.fillRect(innerX, innerY, innerW, innerH)
+        } else if (!activeMidis.has(midi)) {
+          ctx.fillStyle = octaveShiftedGradient(ctx, innerX, innerY, innerW, innerH, false)
+          ctx.fillRect(innerX, innerY, innerW, innerH)
         }
 
-        // Active glow
+        // Active glow (only for the exact midi note that's being played)
         if (activeMidis.has(midi)) {
           ctx.fillStyle = activeKeyGradient(ctx, innerX, innerY, innerW, innerH, false)
           ctx.fillRect(innerX, innerY, innerW, innerH)
@@ -369,16 +383,19 @@ export function createChordPanel(container, opts = {}) {
         ctx.fillStyle = blackKeyBaseGradient(ctx, innerX, innerY, innerW, innerH)
         ctx.fillRect(innerX, innerY, innerW, innerH)
 
-        // Suggestion glow
+        // Suggestion glow OR octave-shifted off-white
         if (scores[pc] != null) {
           ctx.fillStyle = suggestionGlow(ctx,
             innerX + innerW / 2, innerY + innerH * 0.50,
             innerW / 2, innerH / 2,
             scores[pc])
           ctx.fillRect(innerX, innerY, innerW, innerH)
+        } else if (!activeMidis.has(midi)) {
+          ctx.fillStyle = octaveShiftedGradient(ctx, innerX, innerY, innerW, innerH, true)
+          ctx.fillRect(innerX, innerY, innerW, innerH)
         }
 
-        // Active
+        // Active (only the exact midi)
         if (activeMidis.has(midi)) {
           ctx.fillStyle = activeKeyGradient(ctx, innerX, innerY, innerW, innerH, true)
           ctx.fillRect(innerX, innerY, innerW, innerH)
