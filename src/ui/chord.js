@@ -9,9 +9,10 @@ const FLAT_NAMES  = ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A
 
 // Context-aware note spelling. Minor / diminished chords use flats (the
 // minor third is ♭3, not #2 — Cm has E♭, not D♯). Otherwise we default to
-// sharp names. For an unknown/missing chord, sharp is the standard default.
+// sharp names. The regex uses a negative lookahead so "maj" / "M7" don't
+// trigger the minor branch despite starting with 'm'.
 export function spellPc(pc, chordName) {
-  const useFlats = chordName ? /^(m|dim)/.test(chordName) : false
+  const useFlats = chordName ? (/^m(?!aj)/.test(chordName) || /^dim/.test(chordName)) : false
   return (useFlats ? FLAT_NAMES : SHARP_NAMES)[((pc % 12) + 12) % 12]
 }
 
@@ -24,8 +25,10 @@ export function spellNoteMidi(midi, chordName) {
 const NOTE_NAMES = SHARP_NAMES   // legacy fallback for callers that don't pass a chord
 
 // Common chord patterns, intervals (in semitones) from the root.
+// "maj" is used explicitly for the plain major triad so the label clearly
+// distinguishes a single-note "C" from a recognised "Cmaj" chord.
 const CHORDS = [
-  { name: '',      intervals: [0, 4, 7] },
+  { name: 'maj',   intervals: [0, 4, 7] },
   { name: 'm',     intervals: [0, 3, 7] },
   { name: 'dim',   intervals: [0, 3, 6] },
   { name: 'aug',   intervals: [0, 4, 8] },
