@@ -10,6 +10,7 @@ import { createTriangleMod } from './ui/triangle.js'
 import { createIntensityCircle } from './ui/intensity.js'
 import { createKnob } from './ui/knob.js'
 import { createChordPanel, spellNoteMidi } from './ui/chord.js'
+import { createCircleOfFifths } from './ui/circleoffifths.js'
 
 // — Presets (localStorage) —
 const PRESET_PREFIX = 'canvas-synth-preset:'
@@ -310,11 +311,13 @@ let triangleMod    = null
 let intensityRing  = null
 let portamentoKnob = null
 let chordPanel     = null
+let cofPanel       = null
 
 // Active midi notes (combined keyboard + MIDI input). Used by the chord panel.
 const activeMidis = new Set()
 function refreshChord() {
   chordPanel?.updateNotes(activeMidis)
+  cofPanel?.setChord(chordPanel?.getChord?.())
   renderNoteDisplay()   // chord context can change preferred enharmonic spelling
 }
 
@@ -481,6 +484,7 @@ startBtn.addEventListener('click', async () => {
   intensityRing  = createIntensityCircle($('intensity-container'), onIntensityChange)
   portamentoKnob = createKnob($('knob-portamento'),              'glide', 0, onPortamentoChange)
   chordPanel     = createChordPanel($('chord-panel'),            { octaves: 3 })
+  cofPanel       = createCircleOfFifths($('cof-panel'))
 
   // Octave toggle buttons (1 / 2 / 3 octaves)
   document.querySelectorAll('#chord-octave-toggle button').forEach(btn => {
@@ -489,6 +493,15 @@ startBtn.addEventListener('click', async () => {
       chordPanel.setOctaves(n)
       document.querySelectorAll('#chord-octave-toggle button').forEach(b => b.classList.toggle('active', b === btn))
     })
+  })
+
+  // Key selector for the COF
+  const cofKeySel = $('cof-key')
+  cofKeySel.addEventListener('change', () => {
+    const v = cofKeySel.value
+    if (!v) { cofPanel.clearKey(); return }
+    const m = v.match(/^(\d+)(maj|min)$/)
+    if (m) cofPanel.setKey(Number(m[1]), m[2] === 'min' ? 'minor' : 'major')
   })
 
   refreshPresetList()
