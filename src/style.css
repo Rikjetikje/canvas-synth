@@ -1,0 +1,508 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+[hidden] { display: none !important; }
+
+body {
+  background: #0f0f0f;
+  color: #e0e0e0;
+  font-family: 'Courier New', monospace;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* — Start screen — */
+
+#start-screen {
+  text-align: center;
+}
+
+h1 {
+  font-size: 2rem;
+  letter-spacing: 0.2em;
+  margin-bottom: 2rem;
+  color: #ffffff;
+}
+
+#start-btn {
+  background: none;
+  border: 1px solid #e0e0e0;
+  color: #e0e0e0;
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 0.75rem 2rem;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  transition: background 0.15s, color 0.15s;
+}
+
+#start-btn:hover {
+  background: #e0e0e0;
+  color: #0f0f0f;
+}
+
+.hint {
+  margin-top: 1.5rem;
+  font-size: 0.75rem;
+  color: #555;
+  letter-spacing: 0.05em;
+}
+
+/* — Synth screen — */
+
+#synth-screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 1.5rem;
+  gap: 0.6rem;
+}
+
+/* — Main card (front + back, flips as one unit) — */
+
+#synth-screen {
+  perspective: 1200px;
+}
+
+#main-card {
+  --cell: min(40vh, 44vw);
+  flex: 0 0 auto;
+  align-self: center;
+  width: calc(2 * var(--cell));
+  height: var(--cell);
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #222;
+}
+
+#main-card.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.card-front {
+  display: flex;
+  flex-direction: row;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+  background: #0f0f0f;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* — XY pad — */
+
+#xy-pad-container {
+  flex: 0 0 var(--cell);
+  width: var(--cell);
+  height: 100%;
+  cursor: crosshair;
+}
+
+#xy-pad-container canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* — Gesture strips — */
+
+#gesture-strips {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-left: 1px solid #222;
+}
+
+/* — Flip button (outside card) — */
+
+#flip-btn {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.5rem;
+  background: none;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.28);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.35rem 0.55rem;
+  line-height: 1;
+  border-radius: 2px;
+  transition: color 0.15s, border-color 0.15s;
+  z-index: 10;
+  user-select: none;
+  font-family: inherit;
+}
+
+#flip-btn:hover {
+  color: rgba(255,255,255,0.85);
+  border-color: rgba(255,255,255,0.35);
+}
+
+/* — Settings panel — */
+
+#settings-panel {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 0.8rem;
+  row-gap: 0.2rem;
+  width: 94%;
+  padding: 0.4rem 0;
+}
+
+.settings-title {
+  grid-column: 1 / -1;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: #444;
+  text-align: center;
+  margin-bottom: 0.3rem;
+}
+
+#presets-bar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #1a1a1a;
+  margin-bottom: 0.3rem;
+  font-size: 0.62rem;
+}
+
+#presets-bar select,
+#presets-bar input,
+#presets-bar button {
+  background: none;
+  border: 1px solid #2a2a2a;
+  color: #c0c0c0;
+  font-family: inherit;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  outline: none;
+}
+
+#presets-bar select {
+  flex: 1;
+  min-width: 0;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+#presets-bar input {
+  flex: 1;
+  min-width: 0;
+  cursor: text;
+}
+
+#presets-bar select:hover,
+#presets-bar button:hover {
+  border-color: #555;
+  color: #e0e0e0;
+}
+
+#preset-delete {
+  flex: 0 0 auto;
+  padding: 0.25rem 0.45rem;
+}
+
+.settings-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.section-title {
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  color: #555;
+  margin-top: 0.5rem;
+  margin-bottom: 0.05rem;
+}
+
+.settings-col > .section-title:first-child {
+  margin-top: 0;
+}
+
+#settings-panel label {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr) 2.2rem;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.56rem;
+  letter-spacing: 0.03em;
+  color: #888;
+  min-width: 0;
+}
+
+#settings-panel input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+  height: 1px;
+  background: #2a2a2a;
+  cursor: pointer;
+  min-width: 0;
+  width: 100%;
+}
+
+#settings-panel input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #c8c8c8;
+  cursor: pointer;
+}
+
+.s-value {
+  color: #d0d0d0;
+  text-align: right;
+  font-size: 0.6rem;
+}
+
+/* — Creative row (extra front controls under the main card) — */
+
+#creative-row {
+  flex: 0 0 auto;
+  align-self: center;
+  width: calc(2 * min(40vh, 44vw));  /* match main-card width */
+  height: 88px;
+  display: grid;
+  grid-template-columns: 2fr 2fr 1fr;
+  gap: 1px;
+  background: #1a1a1a;            /* shows as 1px dividers between cells */
+  border: 1px solid #222;
+  border-top: none;               /* card already has a border at bottom */
+}
+
+#triangle-container,
+#intensity-container,
+#knob-portamento {
+  background: #0f0f0f;
+  position: relative;
+  cursor: crosshair;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#knob-portamento { cursor: ns-resize; }
+
+#triangle-container canvas,
+#intensity-container canvas,
+#knob-portamento canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* — Chord panel (chord name + schematic piano with extension hints) — */
+
+#chord-panel {
+  flex: 0 0 auto;
+  align-self: center;
+  width: calc(2 * min(40vh, 44vw));   /* match card / creative-row width */
+  height: 96px;
+  background: #0f0f0f;
+  border: 1px solid #222;
+  border-top: none;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#chord-panel[data-octaves="2"] { height: 132px; }
+#chord-panel[data-octaves="1"] { height: 172px; }
+
+#chord-panel canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#chord-octave-toggle {
+  position: absolute;
+  top: 5px;
+  right: 7px;
+  display: flex;
+  gap: 1px;
+  z-index: 5;
+}
+
+#chord-octave-toggle button {
+  width: 18px;
+  height: 18px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.35);
+  font-family: inherit;
+  font-size: 0.62rem;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: color 0.12s, border-color 0.12s;
+}
+
+#chord-octave-toggle button:hover {
+  color: rgba(255,255,255,0.85);
+  border-color: rgba(255,255,255,0.30);
+}
+
+#chord-octave-toggle button.active {
+  color: rgba(255,255,255,0.95);
+  border-color: rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.06);
+}
+
+/* — Bottom bar — */
+
+#bottom-bar {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+/* — Individual gesture strip containers — */
+
+#envelope-container,
+#filter-envelope-container,
+#waveform-container {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+}
+
+#filter-envelope-container,
+#waveform-container {
+  border-top: 1px solid #1a1a1a;
+}
+
+.strip-canvas-wrap {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  cursor: crosshair;
+}
+
+.strip-canvas-wrap canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.strip-presets {
+  flex: 0 0 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  padding: 4px 0;
+  border-left: 1px solid #1a1a1a;
+}
+
+.preset-btn {
+  width: 24px;
+  height: 22px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.22);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+}
+
+.preset-btn:hover { color: rgba(255,255,255,0.9); }
+
+#envelope-container        .preset-btn:hover { color: rgba(255,210,140,0.95); }
+#filter-envelope-container .preset-btn:hover { color: rgba(140,190,255,0.95); }
+#waveform-container        .preset-btn:hover { color: rgba(100,220,140,0.95); }
+
+.preset-btn svg { display: block; }
+
+#envelope-container canvas,
+#filter-envelope-container canvas,
+#waveform-container canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+
+#note-display {
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+  color: #444;
+  min-height: 1.5rem;
+}
+
+#note-display.playing {
+  color: #e0e0e0;
+}
+
+#midi-area select {
+  background: none;
+  border: 1px solid #2a2a2a;
+  color: #e0e0e0;
+  font-family: inherit;
+  font-size: 0.75rem;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  appearance: none;
+}
+
+#midi-area select:focus {
+  outline: none;
+  border-color: #555;
+}
+
+#midi-status {
+  font-size: 0.65rem;
+  color: #383838;
+  letter-spacing: 0.05em;
+  min-height: 1rem;
+}

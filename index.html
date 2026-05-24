@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Canvas Synth</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="start-screen">
+      <h1>Canvas Synth</h1>
+      <button id="start-btn">Klik om te starten</button>
+      <p class="hint">gebruik toetsen A S D F G H J K of een MIDI-keyboard</p>
+    </div>
+    <div id="synth-screen" hidden>
+
+      <button id="flip-btn" title="Instellingen">⟳</button>
+
+      <div id="main-card">
+
+        <!-- Voorkant: XY-pad + gesture strips -->
+        <div class="card-face card-front">
+          <div id="xy-pad-container"></div>
+          <div id="gesture-strips">
+            <div id="envelope-container"></div>
+            <div id="filter-envelope-container"></div>
+            <div id="waveform-container"></div>
+          </div>
+        </div>
+
+        <!-- Achterkant: vaste instellingen -->
+        <div class="card-face card-back">
+          <div id="settings-panel">
+            <div id="presets-bar">
+              <select id="preset-select" title="Geladen preset">
+                <option value="">— preset laden —</option>
+              </select>
+              <input type="text" id="preset-name" placeholder="naam…" maxlength="24" title="Naam voor nieuwe preset" />
+              <button id="preset-save" title="Sla huidige geluid op">save</button>
+              <button id="preset-delete" title="Verwijder geselecteerde preset">×</button>
+            </div>
+
+            <div class="settings-col">
+              <p class="section-title">mix</p>
+              <label title="Totaalvolume van de synth"><span>gain</span>
+                <input type="range" id="s-volume" min="-24" max="0" step="0.5" value="-10" />
+                <span class="s-value" id="s-volume-val">-10 dB</span></label>
+              <label title="Hoeveel galm wordt bij het signaal gemengd (0 = droog, 1 = volle galm)"><span>rvb wet</span>
+                <input type="range" id="s-reverb-wet" min="0" max="1" step="0.01" value="0.14" />
+                <span class="s-value" id="s-reverb-wet-val">0.14</span></label>
+              <label title="Lengte van de galm-staart in seconden (alleen hoorbaar als wet > 0)"><span>rvb dec</span>
+                <input type="range" id="s-reverb-decay" min="0.3" max="6" step="0.1" value="2.5" />
+                <span class="s-value" id="s-reverb-decay-val">2.5 s</span></label>
+              <label title="Hoeveelheid distortion / saturation (0 = clean)"><span>dist</span>
+                <input type="range" id="s-distortion" min="0" max="1" step="0.01" value="0" />
+                <span class="s-value" id="s-distortion-val">0.00</span></label>
+
+              <p class="section-title">oscillator</p>
+              <label title="Aantal gestapelde oscillatoren per stem (1 = dun, 4 = vet)"><span>osc</span>
+                <input type="range" id="s-osc-count" min="1" max="4" step="1" value="1" />
+                <span class="s-value" id="s-osc-count-val">1</span></label>
+              <label title="Spread in cents tussen oscillatoren (werkt alleen als osc > 1)"><span>detune</span>
+                <input type="range" id="s-osc-detune" min="0" max="80" step="1" value="0" />
+                <span class="s-value" id="s-osc-detune-val">0 ct</span></label>
+            </div>
+
+            <div class="settings-col">
+              <p class="section-title">filter</p>
+              <label title="Cutoff van het master laagdoorlaat-filter (na de synth)"><span>freq</span>
+                <input type="range" id="s-filter-freq" min="100" max="8000" step="10" value="700" />
+                <span class="s-value" id="s-filter-freq-val">700 Hz</span></label>
+              <label title="Resonance / piek-versterking bij de cutoff-frequentie"><span>Q</span>
+                <input type="range" id="s-filter-q" min="0.5" max="20" step="0.1" value="1" />
+                <span class="s-value" id="s-filter-q-val">1.0</span></label>
+
+              <p class="section-title">amp env</p>
+              <label title="Tijd om volume op piek te brengen na noot-aan"><span>attack</span>
+                <input type="range" id="s-env-attack" min="0.005" max="4" step="0.005" value="0.3" />
+                <span class="s-value" id="s-env-attack-val">0.30 s</span></label>
+              <label title="Tijd om van piek naar sustain-niveau te zakken"><span>decay</span>
+                <input type="range" id="s-env-decay" min="0.01" max="4" step="0.01" value="0.2" />
+                <span class="s-value" id="s-env-decay-val">0.20 s</span></label>
+              <label title="Niveau dat aangehouden wordt tijdens vasthouden van de toets"><span>sustain</span>
+                <input type="range" id="s-env-sustain" min="0" max="1" step="0.01" value="0.9" />
+                <span class="s-value" id="s-env-sustain-val">0.90</span></label>
+              <label title="Tijd om naar stilte te gaan na loslaten van de toets"><span>release</span>
+                <input type="range" id="s-env-release" min="0.05" max="4" step="0.01" value="1.2" />
+                <span class="s-value" id="s-env-release-val">1.20 s</span></label>
+            </div>
+
+            <div class="settings-col">
+              <p class="section-title">filter env</p>
+              <label title="Tijd om de filter-cutoff op piek te brengen"><span>attack</span>
+                <input type="range" id="s-fenv-attack" min="0.005" max="4" step="0.005" value="0.02" />
+                <span class="s-value" id="s-fenv-attack-val">0.02 s</span></label>
+              <label title="Tijd om filter van piek naar sustain te zakken"><span>decay</span>
+                <input type="range" id="s-fenv-decay" min="0.01" max="4" step="0.01" value="0.3" />
+                <span class="s-value" id="s-fenv-decay-val">0.30 s</span></label>
+              <label title="Filter-cutoff niveau tijdens vasthouden (0 = base, 1 = peak)"><span>sustain</span>
+                <input type="range" id="s-fenv-sustain" min="0" max="1" step="0.01" value="0.2" />
+                <span class="s-value" id="s-fenv-sustain-val">0.20</span></label>
+              <label title="Tijd om filter terug naar base te laten zakken na noot-uit"><span>release</span>
+                <input type="range" id="s-fenv-release" min="0.05" max="4" step="0.01" value="0.5" />
+                <span class="s-value" id="s-fenv-release-val">0.50 s</span></label>
+              <label title="Rust-cutoff van het synth-interne filter (waar het naar terugkeert)"><span>base</span>
+                <input type="range" id="s-fenv-base" min="50" max="2000" step="10" value="200" />
+                <span class="s-value" id="s-fenv-base-val">200 Hz</span></label>
+              <label title="Hoeveel octaven hoger het filter op de piek staat dan base"><span>octaves</span>
+                <input type="range" id="s-fenv-octaves" min="0" max="8" step="0.1" value="2" />
+                <span class="s-value" id="s-fenv-octaves-val">2.0</span></label>
+            </div>
+
+            <div class="settings-col">
+              <p class="section-title">modulation</p>
+              <label title="Vibrato — pitch-wobble snelheid (Hz)"><span>vib hz</span>
+                <input type="range" id="s-vib-rate" min="0.1" max="20" step="0.1" value="5" />
+                <span class="s-value" id="s-vib-rate-val">5.0</span></label>
+              <label title="Vibrato — intensiteit (0 = uit)"><span>vib</span>
+                <input type="range" id="s-vib-depth" min="0" max="1" step="0.01" value="0" />
+                <span class="s-value" id="s-vib-depth-val">0.00</span></label>
+              <label title="Tremolo — volume-wobble snelheid (Hz)"><span>trm hz</span>
+                <input type="range" id="s-trm-rate" min="0.1" max="20" step="0.1" value="6" />
+                <span class="s-value" id="s-trm-rate-val">6.0</span></label>
+              <label title="Tremolo — intensiteit (0 = uit)"><span>trm</span>
+                <input type="range" id="s-trm-depth" min="0" max="1" step="0.01" value="0" />
+                <span class="s-value" id="s-trm-depth-val">0.00</span></label>
+              <label title="Filter-wobble — snelheid (Hz)"><span>flt hz</span>
+                <input type="range" id="s-flt-rate" min="0.1" max="20" step="0.1" value="2" />
+                <span class="s-value" id="s-flt-rate-val">2.0</span></label>
+              <label title="Filter-wobble — intensiteit (0 = uit)"><span>flt</span>
+                <input type="range" id="s-flt-depth" min="0" max="1" step="0.01" value="0" />
+                <span class="s-value" id="s-flt-depth-val">0.00</span></label>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div id="creative-row">
+        <div id="triangle-container" title="Modulatie-driehoek: sleep tussen kalm / warble / shake"></div>
+        <div id="intensity-container" title="Intensiteit: sleep naar buiten voor meer distortion + filter + reverb"></div>
+        <div id="knob-portamento" title="Portamento: pitch-glide tussen noten (draaiknop, sleep verticaal)"></div>
+      </div>
+
+      <div id="chord-panel" title="Akkoord-herkenning met extensie-suggesties: groen = consonant, oranje = spannend, rood = clashend">
+        <div id="chord-octave-toggle">
+          <button data-oct="1" title="Toon 1 octaaf">1</button>
+          <button data-oct="2" title="Toon 2 octaven">2</button>
+          <button data-oct="3" title="Toon 3 octaven" class="active">3</button>
+        </div>
+      </div>
+
+      <div id="bottom-bar">
+        <div id="note-display">—</div>
+        <div id="midi-area" hidden>
+          <select id="midi-select"></select>
+        </div>
+        <div id="midi-status"></div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
