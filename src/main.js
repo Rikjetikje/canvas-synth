@@ -17,6 +17,7 @@ import {
   setBPM, getBPM,
   toggleStep, setStep, getPattern, setPattern, clearPattern,
   onStep,
+  setDrumVolume,
   DRUM_TRACK_NAMES,
 } from './audio/drums.js'
 
@@ -541,9 +542,27 @@ startBtn.addEventListener('click', async () => {
     drumBpmVal.textContent = `${v}`
   })
 
+  const drumVol    = $('drum-vol')
+  const drumVolVal = $('drum-vol-val')
+  drumVol.addEventListener('input', () => {
+    const v = Number(drumVol.value)
+    setDrumVolume(v)
+    drumVolVal.textContent = `${v}`
+  })
+
   $('drum-clear').addEventListener('click', () => {
     clearPattern()
     drumGrid.redraw()
+  })
+
+  // Collapse buttons on every panel that has one
+  document.querySelectorAll('.collapse-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation()
+      const panel = btn.parentElement
+      panel.classList.toggle('panel-collapsed')
+      btn.textContent = panel.classList.contains('panel-collapsed') ? '+' : '−'
+    })
   })
 
   // Octave toggle buttons (1 / 2 / 3 octaves)

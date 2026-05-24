@@ -8,9 +8,10 @@ import * as Tone from 'tone'
 const TRACKS = 6
 const STEPS  = 16
 
-// Shared output bus for all drum sounds. Lives slightly under the main mix
-// so it can sit alongside the melodic synth without dominating.
-const drumBus = new Tone.Gain(0.7).toDestination()
+// Shared output bus for all drum sounds. Starts a few dB under unity so the
+// drums sit alongside the synth without dominating it. The drum-volume
+// slider in the UI can push this up or down (see setDrumVolume).
+const drumBus = new Tone.Gain(Tone.dbToGain(-9)).toDestination()
 
 // — Voice 0: Kick —
 const kick = new Tone.MembraneSynth({
