@@ -24,29 +24,60 @@ export function spellNoteMidi(midi, chordName) {
 
 const NOTE_NAMES = SHARP_NAMES   // legacy fallback for callers that don't pass a chord
 
-// Common chord patterns, intervals (in semitones) from the root.
+// Chord patterns: intervals (in semitones) from the root.
 // "maj" is used explicitly for the plain major triad so the label clearly
 // distinguishes a single-note "C" from a recognised "Cmaj" chord.
+// More specific (longer) patterns are listed FIRST so they win over the
+// subset-fallback when an exact match is possible.
 const CHORDS = [
-  { name: 'maj',   intervals: [0, 4, 7] },
-  { name: 'm',     intervals: [0, 3, 7] },
-  { name: 'dim',   intervals: [0, 3, 6] },
-  { name: 'aug',   intervals: [0, 4, 8] },
-  { name: 'sus2',  intervals: [0, 2, 7] },
-  { name: 'sus4',  intervals: [0, 5, 7] },
-  { name: '5',     intervals: [0, 7] },           // power chord
-  { name: 'M7',    intervals: [0, 4, 7, 11] },
-  { name: 'm7',    intervals: [0, 3, 7, 10] },
-  { name: '7',     intervals: [0, 4, 7, 10] },
-  { name: 'dim7',  intervals: [0, 3, 6, 9] },
-  { name: 'm7♭5',  intervals: [0, 3, 6, 10] },
-  { name: '6',     intervals: [0, 4, 7, 9] },
-  { name: 'm6',    intervals: [0, 3, 7, 9] },
-  { name: 'add9',  intervals: [0, 2, 4, 7] },
-  { name: 'madd9', intervals: [0, 2, 3, 7] },
-  { name: 'M9',    intervals: [0, 2, 4, 7, 11] },
-  { name: 'm9',    intervals: [0, 2, 3, 7, 10] },
-  { name: '9',     intervals: [0, 2, 4, 7, 10] },
+  // Triads
+  { name: 'maj',     intervals: [0, 4, 7] },
+  { name: 'm',       intervals: [0, 3, 7] },
+  { name: 'dim',     intervals: [0, 3, 6] },
+  { name: 'aug',     intervals: [0, 4, 8] },
+  { name: 'sus2',    intervals: [0, 2, 7] },
+  { name: 'sus4',    intervals: [0, 5, 7] },
+  { name: '5',       intervals: [0, 7] },
+
+  // Sixths
+  { name: '6',       intervals: [0, 4, 7, 9] },
+  { name: 'm6',      intervals: [0, 3, 7, 9] },
+
+  // Sevenths (basic)
+  { name: 'M7',      intervals: [0, 4, 7, 11] },
+  { name: 'm7',      intervals: [0, 3, 7, 10] },
+  { name: '7',       intervals: [0, 4, 7, 10] },
+  { name: 'dim7',    intervals: [0, 3, 6, 9] },
+  { name: 'm7♭5',    intervals: [0, 3, 6, 10] },
+
+  // Sevenths (extended)
+  { name: 'm(maj7)', intervals: [0, 3, 7, 11] },     // minor-major 7, jazz/film
+  { name: '7sus4',   intervals: [0, 5, 7, 10] },     // dominant suspended
+  { name: '7♭5',     intervals: [0, 4, 6, 10] },     // jazz dominant flat-five
+  { name: '7♯5',     intervals: [0, 4, 8, 10] },     // augmented dominant
+  { name: 'M7♭5',    intervals: [0, 4, 6, 11] },
+  { name: 'M7♯5',    intervals: [0, 4, 8, 11] },     // augmented major 7
+
+  // Adds
+  { name: 'add9',    intervals: [0, 2, 4, 7] },
+  { name: 'madd9',   intervals: [0, 2, 3, 7] },
+  { name: 'sus2sus4',intervals: [0, 2, 5, 7] },      // both suspensions / open voicing
+
+  // Sixth/Ninths
+  { name: '6/9',     intervals: [0, 2, 4, 7, 9] },
+  { name: 'm6/9',    intervals: [0, 2, 3, 7, 9] },
+
+  // Ninths
+  { name: 'M9',      intervals: [0, 2, 4, 7, 11] },
+  { name: 'm9',      intervals: [0, 2, 3, 7, 10] },
+  { name: '9',       intervals: [0, 2, 4, 7, 10] },
+  { name: '9sus4',   intervals: [0, 2, 5, 7, 10] },  // also voicing for 11
+  { name: '7♭9',     intervals: [0, 1, 4, 7, 10] },  // altered dominant
+  { name: '7♯9',     intervals: [0, 3, 4, 7, 10] },  // hendrix chord
+  { name: 'm(maj9)', intervals: [0, 2, 3, 7, 11] },
+
+  // Quartal voicings (stacks of 4ths) — modern jazz
+  { name: 'quartal', intervals: [0, 5, 10] },
 ]
 
 // Interval consonance scores. 0 = totally consonant, 1 = harshly dissonant.
