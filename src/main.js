@@ -11,6 +11,14 @@ import { createIntensityCircle } from './ui/intensity.js'
 import { createKnob } from './ui/knob.js'
 import { createChordPanel, spellNoteMidi } from './ui/chord.js'
 import { createCircleOfFifths } from './ui/circleoffifths.js'
+import { createDrumGrid } from './ui/drumgrid.js'
+import {
+  startDrums, stopDrums, isDrumPlaying,
+  setBPM, getBPM,
+  toggleStep, setStep, getPattern, setPattern, clearPattern,
+  onStep,
+  DRUM_TRACK_NAMES,
+} from './audio/drums.js'
 
 // — Presets (localStorage) —
 const PRESET_PREFIX = 'canvas-synth-preset:'
@@ -312,6 +320,7 @@ let intensityRing  = null
 let portamentoKnob = null
 let chordPanel     = null
 let cofPanel       = null
+let drumGrid       = null
 
 // Active midi notes (combined keyboard + MIDI input). Used by the chord panel.
 const activeMidis = new Set()
@@ -391,6 +400,7 @@ function captureCurrentPreset() {
   const data = {
     sliders: {}, envNodes: null, fenvNodes: null, waveNodes: null,
     triangle: null, intensity: null, portamento: null,
+    drumPattern: null, drumBpm: null,
   }
   for (const k of Object.keys(sliders)) {
     data.sliders[k] = Number(sliders[k].el.value)
@@ -401,6 +411,8 @@ function captureCurrentPreset() {
   if (triangleMod)    data.triangle   = triangleMod.getState()
   if (intensityRing)  data.intensity  = intensityRing.getState()
   if (portamentoKnob) data.portamento = portamentoKnob.getState()
+  data.drumPattern = getPattern()
+  data.drumBpm     = Math.round(getBPM())
   return data
 }
 
@@ -424,6 +436,17 @@ function applyPreset(data) {
   if (data.triangle    && triangleMod)    triangleMod.setState(data.triangle)
   if (data.intensity   && intensityRing)  intensityRing.setState(data.intensity)
   if (data.portamento  && portamentoKnob) portamentoKnob.setState(data.portamento)
+  // Drum machine
+  if (data.drumPattern) {
+    setPattern(data.drumPattern)
+    drumGrid?.redraw()
+  }
+  if (typeof data.drumBpm === 'number') {
+    setBPM(data.drumBpm)
+    const bpmEl = $('drum-bpm'), bpmVal = $('drum-bpm-val')
+    if (bpmEl)    bpmEl.value = String(data.drumBpm)
+    if (bpmVal)   bpmVal.textContent = `${data.drumBpm}`
+  }
 }
 
 function refreshPresetList() {
@@ -485,6 +508,43 @@ startBtn.addEventListener('click', async () => {
   portamentoKnob = createKnob($('knob-portamento'),              'glide', 0, onPortamentoChange)
   chordPanel     = createChordPanel($('chord-panel'),            { octaves: 3 })
   cofPanel       = createCircleOfFifths($('cof-panel'))
+
+  // Drum machine grid + transport controls
+  drumGrid = createDrumGrid($('drum-grid-container'), {
+    labels:     DRUM_TRACK_NAMES,
+    steps:      16,
+    onToggle:   (t, s, on) => setStep(t, s, on),
+    getPattern: getPattern,
+  })
+  onStep(step => drumGrid.setCurrentStep(step))
+
+  const drumPlay = $('drum-play')
+  drumPlay.addEventListener('click', () => {
+    if (isDrumPlaying()) {
+      stopDrums()
+      drumPlay.textContent = '▶'
+      drumPlay.classList.remove('playing')
+    } else {
+      startDrums()
+      drumPlay.textContent = '■'
+      drumPlay.classList.add('playing')
+    }
+  })
+
+  const drumBpm    = $('drum-bpm')
+  const drumBpmVal = $('drum-bpm-val')
+  drumBpm.value = String(Math.round(getBPM()))
+  drumBpmVal.textContent = `${Math.round(getBPM())}`
+  drumBpm.addEventListener('input', () => {
+    const v = Number(drumBpm.value)
+    setBPM(v)
+    drumBpmVal.textContent = `${v}`
+  })
+
+  $('drum-clear').addEventListener('click', () => {
+    clearPattern()
+    drumGrid.redraw()
+  })
 
   // Octave toggle buttons (1 / 2 / 3 octaves)
   document.querySelectorAll('#chord-octave-toggle button').forEach(btn => {

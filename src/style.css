@@ -349,6 +349,103 @@ h1 {
 #chord-panel[data-octaves="2"] { height: 132px; }
 #chord-panel[data-octaves="1"] { height: 172px; }
 
+/* — Drum machine panel — */
+
+#drum-panel {
+  flex: 0 0 auto;
+  align-self: center;
+  width: calc(2 * min(40vh, 44vw));
+  height: 196px;
+  background: #0f0f0f;
+  border: 1px solid #222;
+  border-top: none;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#drum-controls {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0.6rem;
+  border-bottom: 1px solid #1a1a1a;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  color: #888;
+}
+
+#drum-controls button {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.65);
+  font-family: inherit;
+  font-size: 0.65rem;
+  padding: 3px 8px;
+  cursor: pointer;
+  outline: none;
+}
+
+#drum-controls button:hover {
+  border-color: rgba(255,255,255,0.30);
+  color: rgba(255,255,255,0.95);
+}
+
+#drum-play.playing {
+  background: rgba(255,220,140,0.18);
+  border-color: rgba(255,220,140,0.55);
+  color: rgba(255,235,180,0.95);
+}
+
+#drum-bpm-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 1;
+  min-width: 0;
+}
+
+#drum-bpm {
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+  flex: 1;
+  min-width: 0;
+  height: 1px;
+  background: #2a2a2a;
+  cursor: pointer;
+}
+
+#drum-bpm::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #c8c8c8;
+  cursor: pointer;
+}
+
+#drum-bpm-val {
+  color: #d0d0d0;
+  font-size: 0.62rem;
+  min-width: 2.6rem;
+  text-align: right;
+}
+
+#drum-grid-container {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+#drum-grid-container canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 /* — Circle of Fifths panel — */
 
 #cof-panel {
