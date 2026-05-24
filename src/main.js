@@ -168,9 +168,9 @@ function onIntensityChange(p) {
   setSliderUI('reverbWet',  reverbWet)
 }
 
-// — Portamento knob (0..1 mapped to 0..0.5 s glide) —
+// — Portamento knob (0..1 mapped to 0..1.5 s glide — pretty extreme at max) —
 function onPortamentoChange(v) {
-  setPortamento(v * 0.5)
+  setPortamento(v * 1.5)
 }
 
 // — Note display —
@@ -555,13 +555,20 @@ startBtn.addEventListener('click', async () => {
     drumGrid.redraw()
   })
 
-  // Collapse buttons on every panel that has one
-  document.querySelectorAll('.collapse-btn').forEach(btn => {
+  // Collapse buttons sit to the left of each row, vertically centred.
+  document.querySelectorAll('.row-collapse-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation()
-      const panel = btn.parentElement
-      panel.classList.toggle('panel-collapsed')
-      btn.textContent = panel.classList.contains('panel-collapsed') ? '+' : '−'
+      const wrap = btn.parentElement
+      wrap.classList.toggle('panel-collapsed')
+      btn.textContent = wrap.classList.contains('panel-collapsed') ? '+' : '−'
+
+      // When the main synth card is collapsed, hide the flip button too —
+      // there's nothing to flip while it's folded away.
+      if (wrap.dataset.collapseId === 'main') {
+        const flipBtnEl = document.getElementById('flip-btn')
+        if (flipBtnEl) flipBtnEl.style.display = wrap.classList.contains('panel-collapsed') ? 'none' : ''
+      }
     })
   })
 

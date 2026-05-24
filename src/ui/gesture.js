@@ -82,47 +82,51 @@ function drawCurve(ctx, nodes, W, H) {
 
 const PRESETS = [
   {
-    name: 'stab',
-    icon: '<svg viewBox="0 0 24 12" width="20" height="10"><path d="M2 2 L6 2 L9 10 L22 10" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+    name: 'neutral',
+    icon: '<svg viewBox="0 0 24 12" width="20" height="10"><path d="M2 6 L22 6" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    // Flat at y=0.5 — held tone at 50%, no envelope shape. Great starting point.
     nodes: [
-      { x: 0,    y: 1, smooth: true, lockedX: true  },
-      { x: 0.02, y: 1, smooth: true, lockedX: false },
-      { x: 0.12, y: 0, smooth: true, lockedX: false },
-      { x: 0.16, y: 0, smooth: true, lockedX: false },
-      { x: 1,    y: 0, smooth: true, lockedX: true  },
+      { x: 0,     y: 0.5, smooth: true, lockedX: true  },
+      { x: 0.005, y: 0.5, smooth: true, lockedX: false },
+      { x: 0.5,   y: 0.5, smooth: true, lockedX: false },
+      { x: 0.995, y: 0.5, smooth: true, lockedX: false },
+      { x: 1,     y: 0.5, smooth: true, lockedX: true  },
     ],
   },
   {
     name: 'pluck',
-    icon: '<svg viewBox="0 0 24 12" width="20" height="10"><path d="M2 10 L4 2 L8 10 L22 10" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+    icon: '<svg viewBox="0 0 24 12" width="20" height="10"><path d="M2 10 L4 2 L9 10 L22 10" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+    // Fast attack, fast decay to silence — percussive plink, no sustain.
     nodes: [
       { x: 0,    y: 0, smooth: true, lockedX: true  },
-      { x: 0.04, y: 1, smooth: true, lockedX: false },
-      { x: 0.20, y: 0, smooth: true, lockedX: false },
-      { x: 0.25, y: 0, smooth: true, lockedX: false },
+      { x: 0.02, y: 1, smooth: true, lockedX: false },
+      { x: 0.13, y: 0, smooth: true, lockedX: false },
+      { x: 0.18, y: 0, smooth: true, lockedX: false },
       { x: 1,    y: 0, smooth: true, lockedX: true  },
     ],
   },
   {
     name: 'lead',
-    icon: '<svg viewBox="0 0 24 12" width="20" height="10"><path d="M2 10 L5 2 L9 5 L16 5 L22 10" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+    icon: '<svg viewBox="0 0 24 12" width="20" height="10"><path d="M2 10 L5 2 L8 5 L18 5 L22 10" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+    // Quick attack, decay to a held sustain (~0.7), medium release.
     nodes: [
-      { x: 0,    y: 0,    smooth: true, lockedX: true  },
-      { x: 0.10, y: 1,    smooth: true, lockedX: false },
-      { x: 0.28, y: 0.65, smooth: true, lockedX: false },
-      { x: 0.78, y: 0.65, smooth: true, lockedX: false },
-      { x: 1,    y: 0,    smooth: true, lockedX: true  },
+      { x: 0,    y: 0,   smooth: true, lockedX: true  },
+      { x: 0.06, y: 1,   smooth: true, lockedX: false },
+      { x: 0.18, y: 0.7, smooth: true, lockedX: false },
+      { x: 0.80, y: 0.7, smooth: true, lockedX: false },
+      { x: 1,    y: 0,   smooth: true, lockedX: true  },
     ],
   },
   {
     name: 'pad',
-    icon: '<svg viewBox="0 0 24 12" width="20" height="10"><path d="M2 10 L9 2 L15 2 L22 10" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+    icon: '<svg viewBox="0 0 24 12" width="20" height="10"><path d="M2 10 L11 2 L15 3 L18 3 L22 10" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+    // Slow attack, high sustain (~0.9), slow release — classic lush pad.
     nodes: [
-      { x: 0,    y: 0,   smooth: true, lockedX: true  },
-      { x: 0.35, y: 1,   smooth: true, lockedX: false },
-      { x: 0.40, y: 0.9, smooth: true, lockedX: false },
-      { x: 0.55, y: 0.9, smooth: true, lockedX: false },
-      { x: 1,    y: 0,   smooth: true, lockedX: true  },
+      { x: 0,    y: 0,    smooth: true, lockedX: true  },
+      { x: 0.30, y: 1,    smooth: true, lockedX: false },
+      { x: 0.40, y: 0.9,  smooth: true, lockedX: false },
+      { x: 0.62, y: 0.9,  smooth: true, lockedX: false },
+      { x: 1,    y: 0,    smooth: true, lockedX: true  },
     ],
   },
 ]

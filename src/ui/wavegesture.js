@@ -136,6 +136,20 @@ function drawCurve(ctx, nodes, W, H) {
 
 const PRESETS = [
   {
+    name: 'neutral',
+    icon: '<svg viewBox="0 0 24 12" width="20" height="10"><path d="M2 6 L22 6" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    // Flat at the zero line — clears any custom partials so the synth reverts
+    // to its built-in oscillator type (fatsine). NOT silence.
+    clearsPartials: true,
+    nodes: [
+      { x: 0.0,  y: 0.5, smooth: true, lockedX: true  },
+      { x: 0.25, y: 0.5, smooth: true, lockedX: false },
+      { x: 0.5,  y: 0.5, smooth: true, lockedX: false },
+      { x: 0.75, y: 0.5, smooth: true, lockedX: false },
+      { x: 1.0,  y: 0.5, smooth: true, lockedX: true  },
+    ],
+  },
+  {
     name: 'sine',
     icon: '<svg viewBox="0 0 24 12" width="20" height="10"><path d="M2 6 Q5 1 8 6 T14 6 Q17 1 20 6 T22 6" stroke="currentColor" fill="none" stroke-width="1.5"/></svg>',
     nodes: [
@@ -196,7 +210,13 @@ export function createWaveformGesture(container, onChange) {
     btn.addEventListener('click', () => {
       nodes = preset.nodes.map(n => ({ ...n }))
       draw()
-      onChange(extractWaveformParams(nodes))
+      // "neutral" wipes the custom-wave partials so the synth falls back to
+      // its built-in oscillator type — otherwise a flat curve = silence.
+      if (preset.clearsPartials) {
+        onChange({ partials: null })
+      } else {
+        onChange(extractWaveformParams(nodes))
+      }
     })
     presetsDiv.appendChild(btn)
   })

@@ -17,24 +17,18 @@
 
       <button id="flip-btn" title="Instellingen">⟳</button>
 
-      <div id="main-card">
+      <div class="row-wrap" data-collapse-id="main">
+        <button class="row-collapse-btn" title="Inklappen">−</button>
+        <span class="collapsed-label">synth-paneel</span>
+        <div id="main-card">
 
         <!-- Voorkant: XY-pad + gesture strips -->
         <div class="card-face card-front">
           <div id="xy-pad-container"></div>
           <div id="gesture-strips">
-            <div id="envelope-container">
-              <button class="collapse-btn corner-tl" title="Inklappen">−</button>
-              <span class="collapsed-label">envelope</span>
-            </div>
-            <div id="filter-envelope-container">
-              <button class="collapse-btn corner-tl" title="Inklappen">−</button>
-              <span class="collapsed-label">filter</span>
-            </div>
-            <div id="waveform-container">
-              <button class="collapse-btn corner-tl" title="Inklappen">−</button>
-              <span class="collapsed-label">wave</span>
-            </div>
+            <div id="envelope-container"></div>
+            <div id="filter-envelope-container"></div>
+            <div id="waveform-container"></div>
           </div>
         </div>
 
@@ -145,30 +139,36 @@
           </div>
         </div>
 
-      </div>
-
-      <div id="creative-row">
-        <button class="collapse-btn corner-tr" title="Inklappen">−</button>
-        <span class="collapsed-label">modulatie + intensiteit + portamento</span>
-        <div id="triangle-container" title="Modulatie-driehoek: sleep tussen kalm / warble / shake"></div>
-        <div id="intensity-container" title="Intensiteit: sleep naar buiten voor meer distortion + filter + reverb"></div>
-        <div id="knob-portamento" title="Portamento: pitch-glide tussen noten (draaiknop, sleep verticaal)"></div>
-      </div>
-
-      <div id="chord-panel" title="Akkoord-herkenning met extensie-suggesties: groen = consonant, oranje = spannend, rood = clashend">
-        <button class="collapse-btn corner-tl" title="Inklappen">−</button>
-        <span class="collapsed-label">akkoord-paneel</span>
-        <div id="chord-octave-toggle">
-          <button data-oct="1" title="Toon 1 octaaf">1</button>
-          <button data-oct="2" title="Toon 2 octaven">2</button>
-          <button data-oct="3" title="Toon 3 octaven" class="active">3</button>
         </div>
       </div>
 
-      <div id="drum-panel">
-        <button class="collapse-btn corner-tr" title="Inklappen">−</button>
+      <div class="row-wrap" data-collapse-id="creative">
+        <button class="row-collapse-btn" title="Inklappen">−</button>
+        <span class="collapsed-label">modulatie + intensiteit + portamento</span>
+        <div id="creative-row">
+          <div id="triangle-container" title="Modulatie-driehoek: sleep tussen kalm / warble / shake"></div>
+          <div id="intensity-container" title="Intensiteit: sleep naar buiten voor meer distortion + filter + reverb"></div>
+          <div id="knob-portamento" title="Portamento: pitch-glide tussen noten (draaiknop, sleep verticaal)"></div>
+        </div>
+      </div>
+
+      <div class="row-wrap" data-collapse-id="chord">
+        <button class="row-collapse-btn" title="Inklappen">−</button>
+        <span class="collapsed-label">akkoord-paneel</span>
+        <div id="chord-panel" title="Akkoord-herkenning met extensie-suggesties: groen = consonant, oranje = spannend, rood = clashend">
+          <div id="chord-octave-toggle">
+            <button data-oct="1" title="Toon 1 octaaf">1</button>
+            <button data-oct="2" title="Toon 2 octaven">2</button>
+            <button data-oct="3" title="Toon 3 octaven" class="active">3</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row-wrap" data-collapse-id="drum">
+        <button class="row-collapse-btn" title="Inklappen">−</button>
         <span class="collapsed-label">drum machine</span>
-        <div id="drum-controls">
+        <div id="drum-panel">
+          <div id="drum-controls">
           <button id="drum-play" title="Start / stop drum machine">▶</button>
           <div id="drum-bpm-wrap">
             <span>bpm</span>
@@ -183,12 +183,14 @@
           <button id="drum-clear" title="Wis patroon">clear</button>
         </div>
         <div id="drum-grid-container"></div>
+        </div>
       </div>
 
-      <div id="cof-panel" title="Quintencirkel: huidige akkoord oplicht, andere akkoorden kleur-gegradeerd op COF-afstand. Kies een toonsoort voor Romeinse cijfers.">
-        <button class="collapse-btn corner-tr" title="Inklappen">−</button>
+      <div class="row-wrap" data-collapse-id="cof">
+        <button class="row-collapse-btn" title="Inklappen">−</button>
         <span class="collapsed-label">quintencirkel</span>
-        <div id="cof-controls">
+        <div id="cof-panel" title="Quintencirkel: huidige akkoord oplicht, andere akkoorden kleur-gegradeerd op COF-afstand. Kies een toonsoort voor Romeinse cijfers.">
+          <div id="cof-controls">
           <select id="cof-key" title="Toonsoort kiezen">
             <option value="">— toonsoort —</option>
             <optgroup label="major">
@@ -220,6 +222,7 @@
               <option value="2min">D  min</option>
             </optgroup>
           </select>
+        </div>
         </div>
       </div>
 

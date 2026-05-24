@@ -80,47 +80,53 @@ function drawCurve(ctx, nodes, W, H) {
 
 const PRESETS = [
   {
-    name: 'drop',
-    icon: '<svg viewBox="0 0 24 12" width="20" height="10"><path d="M2 3 L7 3 L11 9 L22 9" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+    name: 'neutral',
+    icon: '<svg viewBox="0 0 24 12" width="20" height="10"><path d="M2 6 L22 6" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    // Flat at mid-Y — base cutoff ≈ 900 Hz, octaves ≈ 0, so the filter
+    // env effectively doesn't move. Static neutral filter.
     nodes: [
-      { x: 0,    y: 0.9, smooth: true, lockedX: true  },
-      { x: 0.04, y: 0.9, smooth: true, lockedX: false },
-      { x: 0.15, y: 0.2, smooth: true, lockedX: false },
-      { x: 0.75, y: 0.2, smooth: true, lockedX: false },
-      { x: 1,    y: 0.2, smooth: true, lockedX: true  },
-    ],
-  },
-  {
-    name: 'open',
-    icon: '<svg viewBox="0 0 24 12" width="20" height="10"><path d="M2 3 L22 3" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round"/></svg>',
-    nodes: [
-      { x: 0,    y: 0.9, smooth: true, lockedX: true  },
-      { x: 0.10, y: 0.92, smooth: true, lockedX: false },
-      { x: 0.30, y: 0.9, smooth: true, lockedX: false },
-      { x: 0.75, y: 0.9, smooth: true, lockedX: false },
-      { x: 1,    y: 0.9, smooth: true, lockedX: true  },
+      { x: 0,     y: 0.5, smooth: true, lockedX: true  },
+      { x: 0.005, y: 0.5, smooth: true, lockedX: false },
+      { x: 0.5,   y: 0.5, smooth: true, lockedX: false },
+      { x: 0.995, y: 0.5, smooth: true, lockedX: false },
+      { x: 1,     y: 0.5, smooth: true, lockedX: true  },
     ],
   },
   {
     name: 'sweep',
     icon: '<svg viewBox="0 0 24 12" width="20" height="10"><path d="M2 10 L5 2 L9 6 L17 6 L22 10" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+    // Low base → sharp climb to high peak → decay to mid sustain → back to base.
+    // Classic LP filter envelope shape.
     nodes: [
-      { x: 0,    y: 0.2,  smooth: true, lockedX: true  },
-      { x: 0.10, y: 0.75, smooth: true, lockedX: false },
-      { x: 0.30, y: 0.45, smooth: true, lockedX: false },
-      { x: 0.75, y: 0.45, smooth: true, lockedX: false },
-      { x: 1,    y: 0.2,  smooth: true, lockedX: true  },
+      { x: 0,    y: 0.18, smooth: true, lockedX: true  },
+      { x: 0.08, y: 0.85, smooth: true, lockedX: false },
+      { x: 0.30, y: 0.50, smooth: true, lockedX: false },
+      { x: 0.75, y: 0.50, smooth: true, lockedX: false },
+      { x: 1,    y: 0.18, smooth: true, lockedX: true  },
+    ],
+  },
+  {
+    name: 'open',
+    icon: '<svg viewBox="0 0 24 12" width="20" height="10"><path d="M2 3 L22 3" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    // Flat at top — bright filter all the way through. No animation.
+    nodes: [
+      { x: 0,    y: 0.92, smooth: true, lockedX: true  },
+      { x: 0.10, y: 0.92, smooth: true, lockedX: false },
+      { x: 0.50, y: 0.92, smooth: true, lockedX: false },
+      { x: 0.85, y: 0.92, smooth: true, lockedX: false },
+      { x: 1,    y: 0.92, smooth: true, lockedX: true  },
     ],
   },
   {
     name: 'closed',
     icon: '<svg viewBox="0 0 24 12" width="20" height="10"><path d="M2 9 L22 9" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    // Flat at bottom — dark / muffled. The envelope barely opens up.
     nodes: [
-      { x: 0,    y: 0.15, smooth: true, lockedX: true  },
-      { x: 0.10, y: 0.18, smooth: true, lockedX: false },
-      { x: 0.30, y: 0.15, smooth: true, lockedX: false },
-      { x: 0.75, y: 0.15, smooth: true, lockedX: false },
-      { x: 1,    y: 0.15, smooth: true, lockedX: true  },
+      { x: 0,    y: 0.12, smooth: true, lockedX: true  },
+      { x: 0.10, y: 0.15, smooth: true, lockedX: false },
+      { x: 0.50, y: 0.12, smooth: true, lockedX: false },
+      { x: 0.85, y: 0.12, smooth: true, lockedX: false },
+      { x: 1,    y: 0.12, smooth: true, lockedX: true  },
     ],
   },
 ]
